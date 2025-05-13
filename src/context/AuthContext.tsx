@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [token]);
 
   const login = (newToken: string) => {
-    console.log(newToken);
     localStorage.setItem("token", newToken);
     setToken(newToken);
   };
