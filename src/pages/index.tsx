@@ -7,9 +7,10 @@ import {
 } from "../services/api";
 
 interface Task {
-  _id: string;
-  title: string;
-  completed: boolean;
+  id: number;
+  titulo: string;
+  descripcion: string;
+  estado: string;
 }
 
 const TasksPage = () => {
@@ -22,6 +23,7 @@ const TasksPage = () => {
     fetchTasks()
       .then((data) => {
         setTasks(data);
+        console.log(data)
         setLoading(false);
       })
       .catch(() => {
@@ -33,7 +35,7 @@ const TasksPage = () => {
   const handleAddTask = async () => {
     if (!newTaskTitle.trim()) return;
     try {
-      const newTask = await createTask({ title: newTaskTitle });
+      const newTask = await createTask({ titulo: newTaskTitle, descripcion: '' });
       setTasks([...tasks, newTask]);
       setNewTaskTitle("");
     } catch {
@@ -43,19 +45,20 @@ const TasksPage = () => {
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      const updated = await updateTask(task._id, {
-        completed: !task.completed,
+      console.log(task)
+      const updated = await updateTask(task.id, {
+        estado: "completado",
       });
-      setTasks(tasks.map((t) => (t._id === task._id ? updated : t)));
+      setTasks(tasks.map((t) => (t.id === task.id ? updated : t)));
     } catch {
       setError("Error al actualizar tarea");
     }
   };
 
-  const handleDelete = async (taskId: string) => {
+  const handleDelete = async (taskId: number) => {
     try {
       await deleteTask(taskId);
-      setTasks(tasks.filter((t) => t._id !== taskId));
+      setTasks(tasks.filter((t) => t.id !== taskId));
     } catch {
       setError("Error al eliminar tarea");
     }
@@ -68,7 +71,7 @@ const TasksPage = () => {
       <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Lista de Tareas</h1>
-          <button className="text-red-500 hover:underline" onClick={() => {}}>
+          <button className="text-red-500 hover:underline" onClick={() => { }}>
             Cerrar Sesión
           </button>
         </div>
@@ -92,25 +95,25 @@ const TasksPage = () => {
         <ul>
           {tasks.map((task) => (
             <li
-              key={task._id}
+              key={task.id}
               className="flex items-center justify-between mb-2 p-2 border rounded"
             >
               <div className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={task.completed}
+                  checked={task.estado === "completado"}
                   onChange={() => handleToggleComplete(task)}
                   className="mr-2"
                 />
                 <span
-                  className={task.completed ? "line-through text-gray-500" : ""}
+                  className={task.estado ? "line-through text-gray-500" : ""}
                 >
-                  {task.title}
+                  {task.titulo}
                 </span>
               </div>
               <button
                 className="text-red-500 hover:underline"
-                onClick={() => handleDelete(task._id)}
+                onClick={() => handleDelete(task.id)}
               >
                 Eliminar
               </button>
