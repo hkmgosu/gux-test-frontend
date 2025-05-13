@@ -5,6 +5,7 @@ import {
   updateTask,
   deleteTask,
 } from "../services/api";
+import { useAuth } from "@/context/AuthContext";
 
 interface Task {
   id: number;
@@ -14,28 +15,32 @@ interface Task {
 }
 
 const TasksPage = () => {
+  const { token, logout } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTasks()
+    if (!token) return;
+    fetchTasks(token)
       .then((data) => {
         setTasks(data);
-        console.log(data)
         setLoading(false);
       })
       .catch(() => {
         setError("Error al cargar tareas");
         setLoading(false);
       });
-  }, []);
+  }, [token]);
 
   const handleAddTask = async () => {
     if (!newTaskTitle.trim()) return;
     try {
-      const newTask = await createTask({ titulo: newTaskTitle, descripcion: '' });
+      const newTask = await createTask(token!, {
+        titulo: newTaskTitle,
+        descripcion: "",
+      });
       setTasks([...tasks, newTask]);
       setNewTaskTitle("");
     } catch {
@@ -45,9 +50,9 @@ const TasksPage = () => {
 
   const handleToggleComplete = async (task: Task) => {
     try {
-      console.log(task)
-      const updated = await updateTask(task.id, {
-        estado: "completado",
+      console.log(task);
+      const updated = await updateTask(token!, task.id, {
+        estado: task.estado === "pendiente" ? "completado" : "pendiente",
       });
       setTasks(tasks.map((t) => (t.id === task.id ? updated : t)));
     } catch {
@@ -57,7 +62,7 @@ const TasksPage = () => {
 
   const handleDelete = async (taskId: number) => {
     try {
-      await deleteTask(taskId);
+      await deleteTask(token!, taskId);
       setTasks(tasks.filter((t) => t.id !== taskId));
     } catch {
       setError("Error al eliminar tarea");
@@ -71,7 +76,7 @@ const TasksPage = () => {
       <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-bold">Lista de Tareas</h1>
-          <button className="text-red-500 hover:underline" onClick={() => { }}>
+          <button className="text-red-500 hover:underline" onClick={logout}>
             Cerrar Sesión
           </button>
         </div>
