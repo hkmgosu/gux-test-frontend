@@ -1,6 +1,6 @@
 # Proyecto NestJS con Docker Compose
 
-Este proyecto es una aplicación NestJS configurada para ejecutarse en contenedores Docker mediante Docker Compose hecho para el proyecto test de GUX que trabaja con el backend del mismo test.
+Este proyecto es una aplicación Next configurada para ejecutarse en contenedores Docker mediante Docker Compose hecho para el proyecto test de GUX que trabaja con el backend del mismo test.
 
 ## Requisitos previos
 
