@@ -9,7 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   useEffect(() => {
-    if (router.pathname !== "/login" && !token) {
+    if (router.pathname !== "/login" && router.pathname !== "/register" && !token && !localStorage.getItem("token")) {
       router.push("/login");
     }
   }, [token, router]);

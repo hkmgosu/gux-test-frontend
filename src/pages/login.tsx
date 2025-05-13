@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { loginApi } from "@/services/api";
+import router from "next/router";
 
 const LoginPage = () => {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const data = await loginApi(email, password);
-      login(data.token);
+      const data = await loginApi(username, password);
+      login(data.access_token);
+      router.push("/");
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       setError("Error en login");
@@ -28,12 +30,12 @@ const LoginPage = () => {
         <h2 className="mb-4 text-xl font-bold">Iniciar Sesión</h2>
         {error && <p className="mb-2 text-red-500">{error}</p>}
         <div className="mb-4">
-          <label className="block mb-1">Email</label>
+          <label className="block mb-1">Usuario</label>
           <input
-            type="email"
+            type="text"
             className="w-full px-3 py-2 border rounded"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
@@ -49,9 +51,16 @@ const LoginPage = () => {
         </div>
         <button
           type="submit"
-          className="w-full px-4 py-2 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
+          className="w-full px-4 py-2 mb-3 font-semibold text-white bg-blue-600 rounded hover:bg-blue-700"
         >
           Ingresar
+        </button>
+        <button
+          type="button"
+          className="w-full px-4 py-2 font-semibold text-white bg-blue-900 rounded hover:bg-blue-700"
+          onClick={() => router.push('/register')}
+        >
+          Registrarse
         </button>
       </form>
     </div>
